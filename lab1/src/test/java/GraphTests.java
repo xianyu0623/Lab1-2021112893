@@ -56,7 +56,11 @@ public class GraphTests {
     }
 
 
-
+@Test
+public void testBridgeWordExists() {
+    String result = queryBridgeWords("apple", "banana");
+    assertEquals("The bridge words from apple to banana are: orange.", result);
+}
 @Test
 public void testNoBridgeWord() {
     String result = queryBridgeWords("cat", "dog");
