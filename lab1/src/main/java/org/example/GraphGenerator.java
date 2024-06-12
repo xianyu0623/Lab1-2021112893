@@ -10,6 +10,7 @@ import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.model.MutableNode;
 import static guru.nidi.graphviz.model.Factory.*;
 
+//IDE git modify/**/
 public class GraphGenerator {
     private static Map<String, Map<String, Integer>> graph = new HashMap<>();
 
@@ -167,7 +168,6 @@ public class GraphGenerator {
             }
         }
     }
-
     private static String generateNewText(String inputText) {
         // 将输入文本转换为小写，去除非字母字符，并替换连续空格为单个空格
         String processedText = inputText.toLowerCase().replaceAll("[^a-z\\s]", "").replaceAll("\\s+", " ");
@@ -242,6 +242,9 @@ public class GraphGenerator {
 
         // 如果word2不为空，则计算从word1到word2的路径
         if (word2 != null && !word2.isEmpty()) {
+            if(word1 == word2){
+                return "Same node! Distance 0!";
+            }
             if (!graph.containsKey(word2)) {
                 return "No " + word2 + " in the graph!";
             }
@@ -373,7 +376,4 @@ public class GraphGenerator {
         System.out.println("Random walk saved to " + outputFile.getAbsolutePath());
         return walkPath.toString();
     }
-
-
-
 }
