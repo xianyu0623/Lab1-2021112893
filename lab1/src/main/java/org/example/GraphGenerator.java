@@ -202,107 +202,107 @@ public class GraphGenerator {
         newText.append(inputWords[inputWords.length - 1]);
         return newText.toString();
     }
-    private static String calcShortestPath(String word1, String word2) {
-        if (!graph.containsKey(word1)) {
-            return "No " + word1 + " in the graph!";
-        }
+private static String calcShortestPath(String word1, String word2) {
+    if (!graph.containsKey(word1)) {
+        return "No " + word1 + " in the graph!";
+    }
 
-        // 使用Dijkstra算法计算从word1到所有其他单词的最短路径
-        Map<String, Integer> distances = new HashMap<>();
-        Map<String, String> previousNodes = new HashMap<>();
-        PriorityQueue<String> nodes = new PriorityQueue<>(Comparator.comparingInt(distances::get));
+    // 使用Dijkstra算法计算从word1到所有其他单词的最短路径
+    Map<String, Integer> distances = new HashMap<>();
+    Map<String, String> previousNodes = new HashMap<>();
+    PriorityQueue<String> nodes = new PriorityQueue<>(Comparator.comparingInt(distances::get));
 
-        for (String node : graph.keySet()) {
-            if (node.equals(word1)) {
-                distances.put(node, 0);
-            } else {
-                distances.put(node, Integer.MAX_VALUE);
-            }
-            nodes.add(node);
-        }
-
-        while (!nodes.isEmpty()) {
-            String current = nodes.poll();
-            Map<String, Integer> neighbors = graph.get(current);
-            if (neighbors == null) continue;
-
-            for (String neighbor : neighbors.keySet()) {
-                int currentDist = distances.get(current);
-                int edgeWeight = neighbors.get(neighbor);
-                if (currentDist == Integer.MAX_VALUE) continue; // 防止溢出
-                int newDist = currentDist + edgeWeight;
-                if (newDist < distances.getOrDefault(neighbor, Integer.MAX_VALUE)) {
-                    distances.put(neighbor, newDist);
-                    previousNodes.put(neighbor, current);
-                    nodes.remove(neighbor);
-                    nodes.add(neighbor);
-                }
-            }
-        }
-
-        // 如果word2不为空，则计算从word1到word2的路径
-        if (word2 != null && !word2.isEmpty()) {
-            if(word1 == word2){
-                return "Same node! Distance 0!";
-            }
-            if (!graph.containsKey(word2)) {
-                return "No " + word2 + " in the graph!";
-            }
-            if (distances.getOrDefault(word2, Integer.MAX_VALUE) == Integer.MAX_VALUE) {
-                return word1 + " and " + word2 + " are not reachable!";
-            }
-
-            // 构建从word1到word2的最短路径
-            List<String> path = new LinkedList<>();
-            for (String at = word2; at != null; at = previousNodes.get(at)) {
-                path.add(at);
-            }
-            Collections.reverse(path);
-
-            // 显示路径
-            StringBuilder pathStr = new StringBuilder();
-            pathStr.append("The shortest path from ").append(word1).append(" to ").append(word2).append(" is: ");
-            for (int i = 0; i < path.size(); i++) {
-                pathStr.append(path.get(i));
-                if (i != path.size() - 1) {
-                    pathStr.append(" -> ");
-                }
-            }
-            pathStr.append(". The total weight is ").append(distances.get(word2)).append(".");
-
-            // 生成图像并突出显示路径
-            try {
-                highlightPath(path);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return pathStr.toString();
+    for (String node : graph.keySet()) {
+        if (node.equals(word1)) {
+            distances.put(node, 0);
         } else {
-            // 计算从word1到所有其他单词的最短路径
-            StringBuilder allPaths = new StringBuilder();
-            for (String target : graph.keySet()) {
-                if (!target.equals(word1)) {
-                    List<String> path = new LinkedList<>();
-                    for (String at = target; at != null; at = previousNodes.get(at)) {
-                        path.add(at);
-                    }
-                    Collections.reverse(path);
-                    if (path.size() == 1) continue; // 跳过不可达的单词
+            distances.put(node, Integer.MAX_VALUE);
+        }
+        nodes.add(node);
+    }
 
-                    allPaths.append("The shortest path from ").append(word1).append(" to ").append(target).append(" is: ");
-                    for (int i = 0; i < path.size(); i++) {
-                        allPaths.append(path.get(i));
-                        if (i != path.size() - 1) {
-                            allPaths.append(" -> ");
-                        }
-                    }
-                    allPaths.append(". The total weight is ").append(distances.get(target)).append(".\n");
-                }
+    while (!nodes.isEmpty()) {
+        String current = nodes.poll();
+        Map<String, Integer> neighbors = graph.get(current);
+        if (neighbors == null) continue;
+
+        for (String neighbor : neighbors.keySet()) {
+            int currentDist = distances.get(current);
+            int edgeWeight = neighbors.get(neighbor);
+            if (currentDist == Integer.MAX_VALUE) continue; // 防止溢出
+            int newDist = currentDist + edgeWeight;
+            if (newDist < distances.getOrDefault(neighbor, Integer.MAX_VALUE)) {
+                distances.put(neighbor, newDist);
+                previousNodes.put(neighbor, current);
+                nodes.remove(neighbor);
+                nodes.add(neighbor);
             }
-            return allPaths.toString();
         }
     }
+
+    // 如果word2不为空，则计算从word1到word2的路径
+    if (word2 != null && !word2.isEmpty()) {
+        if(word1 == word2){
+            return "Same node! Distance 0!";
+        }
+        if (!graph.containsKey(word2)) {
+            return "No " + word2 + " in the graph!";
+        }
+        if (distances.getOrDefault(word2, Integer.MAX_VALUE) == Integer.MAX_VALUE) {
+            return word1 + " and " + word2 + " are not reachable!";
+        }
+
+        // 构建从word1到word2的最短路径
+        List<String> path = new LinkedList<>();
+        for (String at = word2; at != null; at = previousNodes.get(at)) {
+            path.add(at);
+        }
+        Collections.reverse(path);
+
+        // 显示路径
+        StringBuilder pathStr = new StringBuilder();
+        pathStr.append("The shortest path from ").append(word1).append(" to ").append(word2).append(" is: ");
+        for (int i = 0; i < path.size(); i++) {
+            pathStr.append(path.get(i));
+            if (i != path.size() - 1) {
+                pathStr.append(" -> ");
+            }
+        }
+        pathStr.append(". The total weight is ").append(distances.get(word2)).append(".");
+
+        // 生成图像并突出显示路径
+        try {
+            highlightPath(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return pathStr.toString();
+    } else {
+        // 计算从word1到所有其他单词的最短路径
+        StringBuilder allPaths = new StringBuilder();
+        for (String target : graph.keySet()) {
+            if (!target.equals(word1)) {
+                List<String> path = new LinkedList<>();
+                for (String at = target; at != null; at = previousNodes.get(at)) {
+                    path.add(at);
+                }
+                Collections.reverse(path);
+                if (path.size() == 1) continue; // 跳过不可达的单词
+
+                allPaths.append("The shortest path from ").append(word1).append(" to ").append(target).append(" is: ");
+                for (int i = 0; i < path.size(); i++) {
+                    allPaths.append(path.get(i));
+                    if (i != path.size() - 1) {
+                        allPaths.append(" -> ");
+                    }
+                }
+                allPaths.append(". The total weight is ").append(distances.get(target)).append(".\n");
+            }
+        }
+        return allPaths.toString();
+    }
+}
 
     private static void highlightPath(List<String> path) throws IOException {
         MutableGraph g = mutGraph("highlightedPath").setDirected(true);
